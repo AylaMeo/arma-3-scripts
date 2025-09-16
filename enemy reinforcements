@@ -15,15 +15,24 @@ _unit5 = _groupMen createUnit ["O_Tura_watcher_lxWS", [0,0,0], [], 0, "NONE"];
 _unit6 = _groupMen createUnit ["O_Tura_HeavyGunner_lxWS", [0,0,0], [], 0, "NONE"];
 _unit7 = _groupMen createUnit ["O_Tura_deserter_lxWS", [0,0,0], [], 0, "NONE"];
 
+(_crew) joinSilent (_groupMen);
+
 {_x moveInAny _vehicle} forEach units _groupMen;
 
 //_vehicle doMove position player;
 _vehicle doMove _aoLocation;
 
-//waitUntil {((player distance _vehicle) <= 25)};
-waitUntil {((_aoLocation distance _vehicle) <= 25)};
+// Function to wait until the vehicle is within 25 meters of the AO location
+waitForVehicleArrival = {
+    params ["_vehicle", "_aoLocation", "_groupMen"];
+    waitUntil {(_aoLocation distance _vehicle) <= 25};
+    
+    _groupMen leaveVehicle _vehicle;
 
-_groupMen leaveVehicle _vehicle;
+    _groupMen move position player;
+    _vehicle doMove position player;
 
-_groupMen move position player;
-_vehicle doMove position player;
+};
+
+// Spawn the wait function
+[_vehicle, _aoLocation, _groupMen] spawn waitForVehicleArrival;
